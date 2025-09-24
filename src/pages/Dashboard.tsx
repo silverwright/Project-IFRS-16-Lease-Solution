@@ -147,11 +147,6 @@ export function Dashboard() {
             </div>
           </div>
         </ChartCard>
-              </div>
-            )}
-          </div>
-        </ChartCard>
-      </div>
 
         <ChartCard
           title="Payment Schedule"
@@ -167,6 +162,15 @@ export function Dashboard() {
                   {leaseData.PaymentFrequency} payments
                 </div>
               </div>
+            ) : (
+              <div className="text-center space-y-2">
+                <AlertCircle className="w-8 h-8 text-cyan-400 mx-auto" />
+                <p className="text-sm text-cyan-600">Complete lease data</p>
+              </div>
+            )}
+          </div>
+        </ChartCard>
+
         <ChartCard
           title="Contract Maturities"
           description="Upcoming lease expirations"
@@ -194,7 +198,7 @@ export function Dashboard() {
             </div>
           </div>
         </ChartCard>
-            ) : (
+
         <ChartCard
           title="Lease Performance"
           description="Key performance indicators"
@@ -221,7 +225,7 @@ export function Dashboard() {
           </div>
         </ChartCard>
       </div>
-              <div className="text-center space-y-2">
+
       {/* Monthly Trends Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartCard
@@ -248,10 +252,10 @@ export function Dashboard() {
               <div className="text-center space-y-2">
                 <AlertCircle className="w-8 h-8 text-indigo-400 mx-auto" />
                 <p className="text-sm text-indigo-600">Complete lease data to view trends</p>
-                <AlertCircle className="w-8 h-8 text-cyan-400 mx-auto" />
-                <p className="text-sm text-cyan-600">Complete lease data</p>
               </div>
             )}
+          </div>
+        </ChartCard>
 
         <ChartCard
           title="Liability Amortization"
@@ -281,8 +285,7 @@ export function Dashboard() {
             )}
           </div>
         </ChartCard>
-          </div>
-        </ChartCard>
+      </div>
     </div>
   );
 }
