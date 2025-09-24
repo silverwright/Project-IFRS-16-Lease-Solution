@@ -105,16 +105,12 @@ export function Home() {
       {/* Hero Section */}
       <section
         className="relative w-screen min-h-screen flex flex-col items-center justify-center text-center bg-cover bg-center -mt-16 md:-mt-20"
- 
->
-        <img
-          src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop"
-          alt="Landing Background"
-          className="absolute inset-0 w-full h-full object-cover z-0"
-        />
-  
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/50"></div>
+        style={{
+          background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 25%, #1e40af 50%, #2563eb 75%, #1d4ed8 100%)'
+        }}
+      >
+        {/* Subtle overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/20"></div>
 
         {/* Content */}
         <div className="relative z-10 px-4">
