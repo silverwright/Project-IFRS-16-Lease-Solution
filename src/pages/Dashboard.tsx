@@ -1,30 +1,50 @@
 import React from 'react';
 import { useLeaseContext } from '../context/LeaseContext';
-import { KPICard } from '../components/Dashboard/KPICard';
-import { ChartCard } from '../components/Dashboard/ChartCard';
 import { 
   FileText, 
   Calculator, 
   DollarSign, 
   Calendar, 
   TrendingUp, 
+  TrendingDown,
   AlertCircle,
-  PieChart,
   BarChart3,
-  Clock,
-  Target,
   Activity,
-  Zap
+  Building,
+  Car,
+  Wrench
 } from 'lucide-react';
 
 export function Dashboard() {
   const { state } = useLeaseContext();
   const { calculations, leaseData } = state;
 
+  // Mock data for demonstration - in real app this would come from API
+  const portfolioData = [
+    { category: 'Real Estate', value: 1.9, contracts: 8, percentage: 75.5, color: 'bg-blue-500' },
+    { category: 'Vehicles', value: 0.3, contracts: 4, percentage: 13.1, color: 'bg-gray-400' },
+    { category: 'Equipment', value: 0.3, contracts: 3, percentage: 11.4, color: 'bg-blue-600' }
+  ];
+
+  const monthlyTrends = [
+    { period: 'Jan', liability: 2.4, asset: 2.6, depreciation: 42 },
+    { period: 'Feb', liability: 2.4, asset: 2.6, depreciation: 41 },
+    { period: 'Mar', liability: 2.3, asset: 2.5, depreciation: 40 },
+    { period: 'Apr', liability: 2.3, asset: 2.5, depreciation: 40 },
+    { period: 'May', liability: 2.2, asset: 2.4, depreciation: 39 },
+    { period: 'Jun', liability: 2.2, asset: 2.5, depreciation: 39 }
+  ];
+
+  const upcomingMaturities = [
+    { contract: 'Office Lease - Downtown', maturityDate: '2024-12-31', liability: 185000, daysToMaturity: 267, status: 'Urgent' },
+    { contract: 'Vehicle Fleet - Sales', maturityDate: '2025-03-15', liability: 45000, daysToMaturity: 193, status: 'Urgent' },
+    { contract: 'Warehouse - North', maturityDate: '2025-06-30', liability: 320000, daysToMaturity: 86, status: 'Urgent' }
+  ];
+
   return (
-    <div className="w-full min-h-screen p-6 space-y-6 bg-slate-100">
+    <div className="w-full min-h-screen p-6 space-y-6 bg-slate-50">
       {/* Header */}
-      <div className="bg-white rounded-lg border border-slate-200 p-6 flex items-center gap-3 shadow">
+      <div className="bg-white rounded-lg border border-slate-200 p-6 flex items-center gap-3 shadow-sm">
         <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
           <BarChart3 className="w-6 h-6 text-blue-600" />
         </div>
@@ -34,263 +54,243 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <KPICard
-          title="Total Contracts"
-          value={leaseData.ContractID ? "1" : "0"}
-          icon={FileText}
-          trend={{ value: 12, isPositive: true }}
-          color="blue"
-        />
-        <KPICard
-          title="Lease Liability"
-          value={calculations ? `₦${(calculations.initialLiability / 1000000).toFixed(1)}M` : "₦0"}
-          icon={DollarSign}
-          color="green"
-        />
-        <KPICard
-          title="ROU Assets"
-          value={calculations ? `₦${(calculations.initialROU / 1000000).toFixed(1)}M` : "₦0"}
-          icon={Calculator}
-          color="purple"
-        />
-        <KPICard
-          title="Active Leases"
-          value={leaseData.ContractID ? "1" : "0"}
-          icon={Calendar}
-          trend={{ value: 8, isPositive: true }}
-          color="orange"
-        />
+      {/* KPI Cards Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+        {/* Total ROU Assets */}
+        <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-slate-600">Total ROU Assets</span>
+            <TrendingUp className="w-4 h-4 text-green-500" />
+          </div>
+          <div className="text-2xl font-bold text-green-600">
+            {calculations ? `₦${(calculations.initialROU / 1000000).toFixed(1)}M` : '₦0.0M'}
+          </div>
+        </div>
+
+        {/* Total Liabilities */}
+        <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-slate-600">Total Liabilities</span>
+            <DollarSign className="w-4 h-4 text-blue-500" />
+          </div>
+          <div className="text-2xl font-bold text-blue-600">
+            {calculations ? `₦${(calculations.initialLiability / 1000000).toFixed(1)}M` : '₦0.0M'}
+          </div>
+        </div>
+
+        {/* Monthly Depreciation */}
+        <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-slate-600">Monthly Depreciation</span>
+            <Activity className="w-4 h-4 text-orange-500" />
+          </div>
+          <div className="text-2xl font-bold text-orange-600">
+            {calculations ? `₦${((calculations.totalDepreciation / (leaseData.NonCancellableYears || 1) / 12) / 1000).toFixed(0)}K` : '₦0K'}
+          </div>
+        </div>
+
+        {/* Monthly Interest */}
+        <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-slate-600">Monthly Interest</span>
+            <DollarSign className="w-4 h-4 text-red-500" />
+          </div>
+          <div className="text-2xl font-bold text-red-600">
+            {calculations ? `₦${((calculations.totalInterest / (leaseData.NonCancellableYears || 1) / 12) / 1000).toFixed(0)}K` : '₦0K'}
+          </div>
+        </div>
+
+        {/* Active Contracts */}
+        <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-slate-600">Active Contracts</span>
+            <FileText className="w-4 h-4 text-purple-500" />
+          </div>
+          <div className="text-2xl font-bold text-purple-600">
+            {leaseData.ContractID ? '1' : '0'}
+          </div>
+        </div>
+
+        {/* Expiring Soon */}
+        <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-slate-600">Expiring Soon</span>
+            <Calendar className="w-4 h-4 text-amber-500" />
+          </div>
+          <div className="text-2xl font-bold text-amber-600">3</div>
+        </div>
       </div>
 
-      {/* Main Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        <ChartCard
-          title="Liability vs ROU Asset"
-          description="Tracking the balance over time"
-        >
-          <div className="h-64 flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg border-2 border-dashed border-blue-200">
-            {calculations ? (
-              <div className="text-center space-y-2">
-                <TrendingUp className="w-8 h-8 text-blue-500 mx-auto" />
-                <div className="text-sm text-blue-700">
-                  Initial Liability: ₦{(calculations.initialLiability / 1000000).toFixed(2)}M
-                  <br />
-                  Initial ROU: ₦{(calculations.initialROU / 1000000).toFixed(2)}M
-                </div>
-              </div>
-            ) : (
-              <div className="text-center space-y-2">
-                <AlertCircle className="w-8 h-8 text-blue-400 mx-auto" />
-                <p className="text-sm text-blue-600">Complete lease data to view charts</p>
-              </div>
-            )}
-          </div>
-        </ChartCard>
-        
-        <ChartCard
-          title="Monthly Depreciation"
-          description="ROU asset depreciation over time"
-        >
-          <div className="h-64 flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100 rounded-lg border-2 border-dashed border-green-200">
-            {calculations ? (
-              <div className="text-center space-y-2">
-                <BarChart3 className="w-8 h-8 text-green-500 mx-auto" />
-                <div className="text-sm text-green-700">
-                  Monthly Depreciation: ₦{((calculations.totalDepreciation / (leaseData.NonCancellableYears || 1) / 12) / 1000000).toFixed(2)}M
-                  <br />
-                  Total: ₦{(calculations.totalDepreciation / 1000000).toFixed(2)}M
-                </div>
-              </div>
-            ) : (
-              <div className="text-center space-y-2">
-                <AlertCircle className="w-8 h-8 text-green-400 mx-auto" />
-                <p className="text-sm text-green-600">Complete lease data to view depreciation</p>
-              </div>
-            )}
-          </div>
-        </ChartCard>
-
-        <ChartCard
-          title="Interest Expense Trend"
-          description="Monthly interest expense over lease term"
-        >
-          <div className="h-64 flex items-center justify-center bg-gradient-to-br from-purple-50 to-violet-100 rounded-lg border-2 border-dashed border-purple-200">
-            {calculations ? (
-              <div className="text-center space-y-2">
-                <Activity className="w-8 h-8 text-purple-500 mx-auto" />
-                <div className="text-sm text-purple-700">
-                  Avg Monthly Interest: ₦{((calculations.totalInterest / (leaseData.NonCancellableYears || 1) / 12) / 1000000).toFixed(2)}M
-                  <br />
-                  Total Interest: ₦{(calculations.totalInterest / 1000000).toFixed(2)}M
-                </div>
-              </div>
-            ) : (
-              <div className="text-center space-y-2">
-                <AlertCircle className="w-8 h-8 text-purple-400 mx-auto" />
-                <p className="text-sm text-purple-600">Complete lease data to view interest</p>
-              </div>
-            )}
-          </div>
-        </ChartCard>
-      </div>
-
-      {/* Secondary Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
-        <ChartCard
-          title="Portfolio Composition"
-          description="Leases by asset class"
-        >
-          <div className="h-48 flex items-center justify-center bg-gradient-to-br from-orange-50 to-amber-100 rounded-lg border-2 border-dashed border-orange-200">
-            <div className="text-center space-y-2">
-              <PieChart className="w-8 h-8 text-orange-500 mx-auto" />
-              <div className="text-sm text-orange-700">
-                {leaseData.AssetClass || 'Equipment'}: 100%
-                <br />
-                <span className="text-xs">1 Active Contract</span>
-              </div>
-            </div>
-          </div>
-        </ChartCard>
-
-        <ChartCard
-          title="Payment Schedule"
-          description="Upcoming payment timeline"
-        >
-          <div className="h-48 flex items-center justify-center bg-gradient-to-br from-cyan-50 to-blue-100 rounded-lg border-2 border-dashed border-cyan-200">
-            {calculations ? (
-              <div className="text-center space-y-2">
-                <Calendar className="w-8 h-8 text-cyan-500 mx-auto" />
-                <div className="text-sm text-cyan-700">
-                  Next Payment: ₦{((leaseData.FixedPaymentPerPeriod || 0) / 1000000).toFixed(2)}M
-                  <br />
-                  {leaseData.PaymentFrequency} payments
-                </div>
-              </div>
-            ) : (
-              <div className="text-center space-y-2">
-                <AlertCircle className="w-8 h-8 text-cyan-400 mx-auto" />
-                <p className="text-sm text-cyan-600">Complete lease data</p>
-              </div>
-            )}
-          </div>
-        </ChartCard>
-
-        <ChartCard
-          title="Contract Maturities"
-          description="Upcoming lease expirations"
-        >
-          <div className="h-48 flex items-center justify-center bg-gradient-to-br from-red-50 to-pink-100 rounded-lg border-2 border-dashed border-red-200">
-            <div className="text-center space-y-2">
-              <Clock className="w-8 h-8 text-red-500 mx-auto" />
-              <div className="text-sm text-red-700">
-                {leaseData.EndDateOriginal ? (
-                  <>
-                    Expires: {new Date(leaseData.EndDateOriginal).toLocaleDateString()}
-                    <br />
-                    <span className="text-xs">
-                      {Math.ceil((new Date(leaseData.EndDateOriginal).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days remaining
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    No active contracts
-                    <br />
-                    <span className="text-xs">Set up contracts to track</span>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </ChartCard>
-
-        <ChartCard
-          title="Lease Performance"
-          description="Key performance indicators"
-        >
-          <div className="h-48 flex items-center justify-center bg-gradient-to-br from-teal-50 to-green-100 rounded-lg border-2 border-dashed border-teal-200">
-            <div className="text-center space-y-2">
-              <Target className="w-8 h-8 text-teal-500 mx-auto" />
-              <div className="text-sm text-teal-700">
-                {calculations ? (
-                  <>
-                    Effective Rate: {((leaseData.IBR_Annual || 0) * 100).toFixed(1)}%
-                    <br />
-                    <span className="text-xs">Lease-to-Asset: {((calculations.initialLiability / calculations.initialROU) * 100).toFixed(0)}%</span>
-                  </>
-                ) : (
-                  <>
-                    Performance metrics
-                    <br />
-                    <span className="text-xs">Complete setup to view</span>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </ChartCard>
-      </div>
-
-      {/* Monthly Trends Section */}
+      {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ChartCard
-          title="Monthly Cash Flow Trends"
-          description="Payment obligations over time"
-        >
-          <div className="h-64 flex items-center justify-center bg-gradient-to-br from-indigo-50 to-blue-100 rounded-lg border-2 border-dashed border-indigo-200">
-            {calculations ? (
-              <div className="text-center space-y-4">
-                <Zap className="w-8 h-8 text-indigo-500 mx-auto" />
-                <div className="space-y-2">
-                  <div className="text-sm text-indigo-700">
-                    <strong>Monthly Payment:</strong> ₦{((leaseData.FixedPaymentPerPeriod || 0) / 1000000).toFixed(2)}M
+        {/* Portfolio Composition */}
+        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-slate-900">Portfolio Composition</h3>
+            <BarChart3 className="w-5 h-5 text-slate-400" />
+          </div>
+          
+          <div className="space-y-4">
+            {portfolioData.map((item, index) => (
+              <div key={index} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {item.category === 'Real Estate' && <Building className="w-4 h-4 text-blue-500" />}
+                    {item.category === 'Vehicles' && <Car className="w-4 h-4 text-gray-500" />}
+                    {item.category === 'Equipment' && <Wrench className="w-4 h-4 text-blue-600" />}
+                    <span className="text-sm font-medium text-slate-700">{item.category}</span>
                   </div>
-                  <div className="text-sm text-indigo-600">
-                    <strong>Annual Total:</strong> ₦{(((leaseData.FixedPaymentPerPeriod || 0) * 12) / 1000000).toFixed(2)}M
-                  </div>
-                  <div className="text-xs text-indigo-500">
-                    {calculations.cashflowSchedule.length} total payments scheduled
+                  <div className="text-right">
+                    <div className="text-sm font-semibold text-slate-900">₦{item.value}M</div>
+                    <div className="text-xs text-slate-500">({item.contracts} contracts)</div>
                   </div>
                 </div>
+                <div className="w-full bg-slate-200 rounded-full h-2">
+                  <div 
+                    className={`${item.color} h-2 rounded-full transition-all duration-300`}
+                    style={{ width: `${item.percentage}%` }}
+                  ></div>
+                </div>
+                <div className="text-xs text-slate-500">{item.percentage}% of total portfolio</div>
               </div>
-            ) : (
-              <div className="text-center space-y-2">
-                <AlertCircle className="w-8 h-8 text-indigo-400 mx-auto" />
-                <p className="text-sm text-indigo-600">Complete lease data to view trends</p>
-              </div>
-            )}
+            ))}
           </div>
-        </ChartCard>
+        </div>
 
-        <ChartCard
-          title="Liability Amortization"
-          description="Outstanding liability reduction over time"
-        >
-          <div className="h-64 flex items-center justify-center bg-gradient-to-br from-rose-50 to-red-100 rounded-lg border-2 border-dashed border-rose-200">
-            {calculations ? (
-              <div className="text-center space-y-4">
-                <TrendingUp className="w-8 h-8 text-rose-500 mx-auto" />
-                <div className="space-y-2">
-                  <div className="text-sm text-rose-700">
-                    <strong>Current Liability:</strong> ₦{(calculations.initialLiability / 1000000).toFixed(2)}M
-                  </div>
-                  <div className="text-sm text-rose-600">
-                    <strong>Monthly Reduction:</strong> ₦{((calculations.initialLiability / (calculations.amortizationSchedule.length || 1)) / 1000000).toFixed(2)}M
-                  </div>
-                  <div className="text-xs text-rose-500">
-                    {calculations.amortizationSchedule.length} periods remaining
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center space-y-2">
-                <AlertCircle className="w-8 h-8 text-rose-400 mx-auto" />
-                <p className="text-sm text-rose-600">Complete lease data to view amortization</p>
-              </div>
-            )}
+        {/* Monthly Trends Table */}
+        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-slate-900">Monthly Trends</h3>
+            <TrendingUp className="w-5 h-5 text-slate-400" />
           </div>
-        </ChartCard>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-slate-200">
+                  <th className="text-left py-3 px-2 text-sm font-medium text-slate-600">Period</th>
+                  <th className="text-right py-3 px-2 text-sm font-medium text-slate-600">Liability</th>
+                  <th className="text-right py-3 px-2 text-sm font-medium text-slate-600">Asset</th>
+                  <th className="text-right py-3 px-2 text-sm font-medium text-slate-600">Depreciation</th>
+                </tr>
+              </thead>
+              <tbody>
+                {monthlyTrends.map((trend, index) => (
+                  <tr key={index} className="border-b border-slate-100 hover:bg-slate-50">
+                    <td className="py-3 px-2 text-sm text-slate-900">{trend.period}</td>
+                    <td className="py-3 px-2 text-sm text-blue-600 text-right font-medium">₦{trend.liability}M</td>
+                    <td className="py-3 px-2 text-sm text-green-600 text-right font-medium">₦{trend.asset}M</td>
+                    <td className="py-3 px-2 text-sm text-orange-600 text-right font-medium">₦{trend.depreciation}K</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Upcoming Contract Maturities */}
+      <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold text-slate-900">Upcoming Contract Maturities</h3>
+          <Calendar className="w-5 h-5 text-slate-400" />
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-slate-200">
+                <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">CONTRACT</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">MATURITY DATE</th>
+                <th className="text-right py-3 px-4 text-sm font-medium text-slate-600">OUTSTANDING LIABILITY</th>
+                <th className="text-right py-3 px-4 text-sm font-medium text-slate-600">DAYS TO MATURITY</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-slate-600">STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {upcomingMaturities.map((contract, index) => (
+                <tr key={index} className="border-b border-slate-100 hover:bg-slate-50">
+                  <td className="py-4 px-4 text-sm text-slate-900 font-medium">{contract.contract}</td>
+                  <td className="py-4 px-4 text-sm text-slate-600">{contract.maturityDate}</td>
+                  <td className="py-4 px-4 text-sm text-slate-900 text-right font-medium">
+                    ₦{contract.liability.toLocaleString()}
+                  </td>
+                  <td className="py-4 px-4 text-sm text-slate-600 text-right">
+                    {contract.daysToMaturity > 0 ? `${contract.daysToMaturity} days` : `${Math.abs(contract.daysToMaturity)} days overdue`}
+                  </td>
+                  <td className="py-4 px-4 text-center">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      contract.status === 'Urgent' 
+                        ? 'bg-red-100 text-red-800' 
+                        : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {contract.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Additional Metrics Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Payment Performance */}
+        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+          <h4 className="text-sm font-medium text-slate-600 mb-4">Payment Performance</h4>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-slate-600">On Time</span>
+              <span className="text-sm font-semibold text-green-600">98.5%</span>
+            </div>
+            <div className="w-full bg-slate-200 rounded-full h-2">
+              <div className="bg-green-500 h-2 rounded-full" style={{ width: '98.5%' }}></div>
+            </div>
+            <div className="flex justify-between items-center text-xs text-slate-500">
+              <span>47 of 48 payments</span>
+              <span>Last 12 months</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Lease Modifications */}
+        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+          <h4 className="text-sm font-medium text-slate-600 mb-4">Lease Modifications</h4>
+          <div className="space-y-3">
+            <div className="text-2xl font-bold text-blue-600">3</div>
+            <div className="text-sm text-slate-600">This quarter</div>
+            <div className="flex items-center gap-2">
+              <TrendingDown className="w-4 h-4 text-red-500" />
+              <span className="text-sm text-red-600">-2 from last quarter</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Compliance Score */}
+        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+          <h4 className="text-sm font-medium text-slate-600 mb-4">Compliance Score</h4>
+          <div className="space-y-3">
+            <div className="text-2xl font-bold text-green-600">94%</div>
+            <div className="w-full bg-slate-200 rounded-full h-2">
+              <div className="bg-green-500 h-2 rounded-full" style={{ width: '94%' }}></div>
+            </div>
+            <div className="text-sm text-slate-600">IFRS 16 Compliance</div>
+          </div>
+        </div>
+
+        {/* Cost Savings */}
+        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+          <h4 className="text-sm font-medium text-slate-600 mb-4">Cost Optimization</h4>
+          <div className="space-y-3">
+            <div className="text-2xl font-bold text-purple-600">₦2.1M</div>
+            <div className="text-sm text-slate-600">Potential savings identified</div>
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-green-500" />
+              <span className="text-sm text-green-600">+15% vs last year</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
