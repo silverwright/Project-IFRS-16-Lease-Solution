@@ -22,10 +22,16 @@ export function Dashboard() {
   const { calculations, leaseData } = state;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-        <p className="text-slate-600">Overview of your IFRS 16 lease portfolio</p>
+    <div className="w-full min-h-screen p-6 space-y-6 bg-slate-100">
+      {/* Header */}
+      <div className="bg-white rounded-lg border border-slate-200 p-6 flex items-center gap-3 shadow">
+        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+          <BarChart3 className="w-6 h-6 text-blue-600" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+          <p className="text-slate-600">Overview of your IFRS 16 lease portfolio</p>
+        </div>
       </div>
 
       {/* KPI Cards */}
